@@ -53,16 +53,16 @@ class CSave : public CSaveRestoreBuffer
 public:
 	CSave( SAVERESTOREDATA *pdata ) : CSaveRestoreBuffer( pdata ) {};
 
-	void	WriteShort( const char *pname, const short *value, int count );
-	void	WriteInt( const char *pname, const int *value, int count );		// Save an int
-	void	WriteFloat( const char *pname, const float *value, int count );	// Save a float
-	void	WriteTime( const char *pname, const float *value, int count );	// Save a float (timevalue)
+	void	WriteShort( const char *pname, short *value, int count );
+	void	WriteInt( const char *pname, int *value, int count );		// Save an int
+	void	WriteFloat( const char *pname, float *value, int count );	// Save a float
+	void	WriteTime( const char *pname, float *value, int count );	// Save a float (timevalue)
 	void	WriteData( const char *pname, int size, const char *pdata );		// Save a binary data block
 	void	WriteString( const char *pname, const char *pstring );			// Save a null-terminated string
 	void	WriteString( const char *pname, const int *stringId, int count );	// Save a null-terminated string (engine string)
-	void	WriteVector( const char *pname, const Vector &value );				// Save a vector
-	void	WriteVector( const char *pname, const float *value, int count );	// Save a vector
-	void	WritePositionVector( const char *pname, const Vector &value );		// Offset for landmark if necessary
+	void	WriteVector( const char *pname, Vector &value );				// Save a vector
+	void	WriteVector( const char *pname, float *value, int count );	// Save a vector
+	void	WritePositionVector( const char *pname, Vector &value );		// Offset for landmark if necessary
 	void	WritePositionVector( const char *pname, const float *value, int count );	// array of pos vectors
 	void	WriteFunction( const char *pname, void **value, int count );		// Save a function pointer
 	int		WriteEntVars( const char *pname, entvars_t *pev );		// Save entvars_t (entvars_t)
