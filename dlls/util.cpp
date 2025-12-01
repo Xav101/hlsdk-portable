@@ -31,6 +31,7 @@
 #include "weapons.h"
 #include "gamerules.h"
 #include "byteswap.h"
+#include <unaligned.h>
 
 float UTIL_WeaponTimeBase( void )
 {
@@ -2212,7 +2213,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 						timeData += time;
 						memcpy( pOutputData, &timeData, 4 );
 					#else
-						timeData = *(float *)pInputData;
+						timeData = unaligned( *(float *)pInputData );
 						timeData = LittleFloat(timeData);
 						// Re-base time variables
 						timeData += time;
@@ -2255,7 +2256,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 						}
 						break;
 					case FIELD_EVARS:
-						entityIndex = *( int *)pInputData;
+						entityIndex = unaligned( *( int *)pInputData );
 						LittleLongSW(entityIndex);
 						pent = EntityFromIndex( entityIndex );
 						if( pent )
@@ -2264,7 +2265,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 							*( (entvars_t **)pOutputData ) = NULL;
 						break;
 					case FIELD_CLASSPTR:
-						entityIndex = *( int *)pInputData;
+						entityIndex = unaligned( *( int *)pInputData );
 						LittleLongSW(entityIndex);
 						pent = EntityFromIndex( entityIndex );
 						if( pent )
@@ -2273,7 +2274,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 							*( (CBaseEntity **)pOutputData ) = NULL;
 						break;
 					case FIELD_EDICT:
-						entityIndex = *(int *)pInputData;
+						entityIndex = unaligned( *(int *)pInputData );
 						LittleLongSW(entityIndex);
 						pent = EntityFromIndex( entityIndex );
 						*( (edict_t **)pOutputData ) = pent;
@@ -2281,7 +2282,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 					case FIELD_EHANDLE:
 						// Input and Output sizes are different!
 						pInputData = (char*)pData + j * gInputSizes[pTest->fieldType];
-						entityIndex = *(int *)pInputData;
+						entityIndex = unaligned( *(int *)pInputData );
 						LittleLongSW(entityIndex);
 						pent = EntityFromIndex( entityIndex );
 						if( pent )
@@ -2290,7 +2291,7 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 							*( (EHANDLE *)pOutputData ) = NULL;
 						break;
 					case FIELD_ENTITY:
-						entityIndex = *(int *)pInputData;
+						entityIndex = unaligned( *(int *)pInputData );
 						LittleLongSW(entityIndex);
 						pent = EntityFromIndex( entityIndex );
 						if( pent )
@@ -2301,13 +2302,13 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 					case FIELD_VECTOR:
 						#if __VFP_FP__
 						memcpy( pOutputData, pInputData, sizeof( Vector ) );
-						((float*)pOutputData)[0] = LittleFloat(((float*)pOutputData)[0]);
-						((float*)pOutputData)[1] = LittleFloat(((float*)pOutputData)[1]);
-						((float*)pOutputData)[2] = LittleFloat(((float*)pOutputData)[2]);
+						((float*)pOutputData)[0] = ULittleFloat(((float*)pOutputData)[0]);
+						((float*)pOutputData)[1] = ULittleFloat(((float*)pOutputData)[1]);
+						((float*)pOutputData)[2] = ULittleFloat(((float*)pOutputData)[2]);
 						#else
-						( (float *)pOutputData )[0] = LittleFloat(( (float *)pInputData )[0]);
-						( (float *)pOutputData )[1] = LittleFloat(( (float *)pInputData )[1]);
-						( (float *)pOutputData )[2] = LittleFloat(( (float *)pInputData )[2]);
+						( (float *)pOutputData )[0] = ULittleFloat(( (float *)pInputData )[0]);
+						( (float *)pOutputData )[1] = ULittleFloat(( (float *)pInputData )[1]);
+						( (float *)pOutputData )[2] = ULittleFloat(( (float *)pInputData )[2]);
 						#endif
 						break;
 					case FIELD_POSITION_VECTOR:
@@ -2322,23 +2323,23 @@ int CRestore::ReadField( void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCou
 							memcpy( pOutputData, &tmp, sizeof( Vector ) );
 						}
 						#else
-						( (float *)pOutputData )[0] = LittleFloat(( (float *)pInputData )[0]) + position.x;
-						( (float *)pOutputData )[1] = LittleFloat(( (float *)pInputData )[1]) + position.y;
-						( (float *)pOutputData )[2] = LittleFloat(( (float *)pInputData )[2]) + position.z;
+						( (float *)pOutputData )[0] = ULittleFloat(( (float *)pInputData )[0]) + position.x;
+						( (float *)pOutputData )[1] = ULittleFloat(( (float *)pInputData )[1]) + position.y;
+						( (float *)pOutputData )[2] = ULittleFloat(( (float *)pInputData )[2]) + position.z;
 						#endif
 						break;
 					case FIELD_BOOLEAN:
 					case FIELD_INTEGER:
-						*( (int *)pOutputData ) = LittleLong(*(int *)pInputData);
+						*( (int *)pOutputData ) = ULittleLong(*(int *)pInputData);
 						break;
 					case FIELD_SHORT:
-						*( (short *)pOutputData ) = LittleShort(*(short *)pInputData);
+						*( (short *)pOutputData ) = ULittleShort(*(short *)pInputData);
 						break;
 					case FIELD_CHARACTER:
 						*( (char *)pOutputData ) = *(char *)pInputData;
 						break;
 					case FIELD_POINTER:
-						*( (void**)pOutputData ) = (void*)LittleLong(*(int *)pInputData);
+						*( (void**)pOutputData ) = (void*)ULittleLong(*(int *)pInputData);
 						break;
 					case FIELD_FUNCTION:
 						if( ( (char *)pInputData )[0] == '\0' )
